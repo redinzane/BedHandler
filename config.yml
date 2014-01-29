@@ -1,0 +1,4 @@
+waitingtimes:
+  setdown: 1000
+features:
+  beddestroyer: false
