@@ -1,0 +1,8 @@
+name: BedHandler
+main: io.github.redinzane.bedhandler.BedHandler
+version: 0.1
+description: BedHandler Plugin Alpha
+
+depend:
+
+permissions:
