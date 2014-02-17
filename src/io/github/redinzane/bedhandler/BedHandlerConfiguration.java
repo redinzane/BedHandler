@@ -10,9 +10,19 @@ public class BedHandlerConfiguration
 	
 	private static final String SECTION_WAITINGTIMES = "waitingtimes";
 	private static final String SECTION_FEATURES = "features";
+	private static final String SECTION_MESSAGES = "messages";
 	
 	private static final String SETDOWN_KEY = "setdown";
 	private static final String BEDDESTROYER_KEY = "beddestroyer";
+	private static final String SPAWNSET_KEY = "spawnset";
+	private static final String SPAWNRESET_KEY = "spawnreset";
+	private static final String BEDCLICK1_KEY = "bedclick1";
+	private static final String BEDCLICK2_KEY = "bedclick2";
+	
+	private static final String spawnSetMessage_default = "Your spawn was set to your bed... If it still exists.";
+	private static final String spawnResetMessage_default = "Your spawn has been reset.";
+	private static final String bedClickMessage1_default = "Your spawn will be set to this bed in ";
+	private static final String bedClickMessage2_default = "... If it still exists then.";
 	
 	private static final int DEFAULT_SETDOWN = 1800000;
 	
@@ -20,6 +30,90 @@ public class BedHandlerConfiguration
 	public BedHandlerConfiguration(Configuration config) 
 	{
 		this.config = config;
+	}
+	
+	/**
+	 * Retrieve the spawn set message.
+	 * @return spawn set message.
+	 */
+	public String getSpawnSetMessage() 
+	{
+		String value = getSectionOrDefault(SECTION_MESSAGES).getString(SPAWNSET_KEY);
+		if(value != null)
+			return value;
+		else
+			return spawnSetMessage_default;
+	}
+	/**
+	 * Set the spawn set message.
+	 * @param value - new spawn set message.
+	 */
+	public void setSpawnSetMessage(String value) 
+	{
+		getSectionOrDefault(SECTION_MESSAGES).set(SPAWNSET_KEY, value);
+	}
+	
+	/**
+	 * Retrieve the spawn reset message.
+	 * @return spawn reset message.
+	 */
+	public String getSpawnResetMessage() 
+	{
+		String value = getSectionOrDefault(SECTION_MESSAGES).getString(SPAWNRESET_KEY);
+		if(value != null)
+			return value;
+		else
+			return spawnResetMessage_default;
+	}
+	/**
+	 * Set the spawn reset message.
+	 * @param value - new spawn reset message.
+	 */
+	public void setSpawnResetMessage(String value) 
+	{
+		getSectionOrDefault(SECTION_MESSAGES).set(SPAWNRESET_KEY, value);
+	}
+	
+	/**
+	 * Retrieve the bedclick1 message.
+	 * @return bedclick1 message.
+	 */
+	public String getBedClick1Message() 
+	{
+		String value = getSectionOrDefault(SECTION_MESSAGES).getString(BEDCLICK1_KEY);
+		if(value != null)
+			return value;
+		else
+			return bedClickMessage1_default;
+	}
+	/**
+	 * Set the bedclick1 message.
+	 * @param value - new bedclick1 message.
+	 */
+	public void setBedClick1Message(String value) 
+	{
+		getSectionOrDefault(SECTION_MESSAGES).set(BEDCLICK1_KEY, value);
+	}
+	
+	/**
+	 * Retrieve the bedclick2 message.
+	 * @return bedclick2 message.
+	 */
+	public String getBedClick2Message() 
+	{
+		String value = getSectionOrDefault(SECTION_MESSAGES).getString(BEDCLICK2_KEY);
+		if(value != null)
+			return value;
+		else
+			return bedClickMessage2_default;
+	}
+	/**
+	 * Set the bedclick2 message.
+	 * @param value - new bedclick2 message.
+	 */
+	public void setBedClick2Message(String value) 
+	{
+		getSectionOrDefault(SECTION_MESSAGES).set(BEDCLICK2_KEY, value);
 	}
 	
 	/**

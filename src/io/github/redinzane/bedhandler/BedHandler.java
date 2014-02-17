@@ -36,6 +36,10 @@ public class BedHandler extends JavaPlugin
 		getServer().getPluginManager().registerEvents(listener, this);
 		listener.bedDestroyer = config.getBeddestroyer();
 		listener.setDownWaitingTime = config.getSetdown();
+		listener.spawnSetMessage = config.getSpawnSetMessage();
+		listener.spawnResetMessage = config.getSpawnResetMessage();
+		listener.bedClickMessage1 = config.getBedClick1Message();
+		
 		
 		try
 		{

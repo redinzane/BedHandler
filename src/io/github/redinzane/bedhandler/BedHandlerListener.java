@@ -4,16 +4,25 @@ import java.util.LinkedList;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.block.Action;
+//import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class BedHandlerListener implements Listener
 {	
 	boolean bedDestroyer = false;
 	int setDownWaitingTime = 1800000;
+	String spawnSetMessage = "Your spawn was set to your bed... If it still exists.";
+	String spawnResetMessage = "Your spawn has been reset.";
+	String bedClickMessage1 = "Your spawn will be set to this bed in ";
+	String bedClickMessage2 = "... If it still exists then.";
+	
 	private long lastCall = 0;
 	private LinkedList<PlayerBed> playerList = new LinkedList<PlayerBed>();
 	private static class PlayerBed 
@@ -46,11 +55,12 @@ public class BedHandlerListener implements Listener
 					location.getWorld().getBlockAt(location).breakNaturally();
 				}
 				playerRespawning.setBedSpawnLocation(null);
+				playerRespawning.sendMessage(ChatColor.GRAY + spawnResetMessage);
 			}
 		}
 	}
 	
-	@EventHandler
+	/*@EventHandler
 	public void onPlayerBedEnter(PlayerBedEnterEvent event)
 	{
 		Player playerEntering = event.getPlayer();
@@ -65,6 +75,29 @@ public class BedHandlerListener implements Listener
 		playerList.add(new PlayerBed(playerEntering, event.getBed().getLocation(), setDownWaitingTime));
 		playerEntering.sendMessage(ChatColor.GRAY + "Your spawn will be set to this bed in " + setDownWaitingTime/60000 + " minutes... If it still exists then.");
 		event.setCancelled(true);
+	}*/
+	
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event)
+	{
+		if(event.hasBlock())
+		{
+			if((event.getClickedBlock().getType().equals(Material.BED) || event.getClickedBlock().getType().equals(Material.BED_BLOCK)) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+			{
+				Player playerEntering = event.getPlayer();
+				playerEntering.setBedSpawnLocation(null);
+				for(PlayerBed item: playerList)
+				{
+					if(item.player.getName().equals(playerEntering.getName()))
+					{
+						playerList.remove(item);
+					}
+				}
+				playerList.add(new PlayerBed(playerEntering, event.getClickedBlock().getLocation(), setDownWaitingTime));
+				playerEntering.sendMessage(ChatColor.GRAY + bedClickMessage1 + setDownWaitingTime/60000 + " minutes" + bedClickMessage2);
+				event.setUseInteractedBlock(Result.DENY);
+			}
+		}
 	}
 	
 	public void updatePlayerList()
@@ -78,7 +111,8 @@ public class BedHandlerListener implements Listener
 			if(item.countdown <= 0)
 			{
 				item.player.setBedSpawnLocation(item.location);
-				item.player.sendMessage(ChatColor.GRAY + "Your spawn was set to your bed... If it still exists.");
+				item.player.sendMessage(ChatColor.GRAY + spawnSetMessage);
+				playerList.remove(item);
 			}
 		}
 	}
