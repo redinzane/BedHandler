@@ -1,6 +1,7 @@
 package io.github.redinzane.bedhandler;
 
 import java.util.LinkedList;
+import java.util.Stack;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,6 +23,7 @@ public class BedHandlerListener implements Listener
 	String spawnResetMessage = "Your spawn has been reset.";
 	String bedClickMessage1 = "Your spawn will be set to this bed in ";
 	String bedClickMessage2 = "... If it still exists then.";
+	Stack<PlayerBed> deleteStack = new Stack<PlayerBed>();
 	
 	private long lastCall = 0;
 	private LinkedList<PlayerBed> playerList = new LinkedList<PlayerBed>();
@@ -112,8 +114,12 @@ public class BedHandlerListener implements Listener
 			{
 				item.player.setBedSpawnLocation(item.location);
 				item.player.sendMessage(ChatColor.GRAY + spawnSetMessage);
-				playerList.remove(item);
+				deleteStack.push(item);
 			}
+		}
+		while(!deleteStack.isEmpty())
+		{
+			playerList.remove(deleteStack.pop());
 		}
 	}
 	
