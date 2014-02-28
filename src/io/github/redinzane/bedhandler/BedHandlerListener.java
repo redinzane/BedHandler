@@ -11,7 +11,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-//import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -19,11 +19,15 @@ public class BedHandlerListener implements Listener
 {	
 	boolean bedDestroyer = false;
 	int setDownWaitingTime = 1800000;
+	int deathCooldown = 300000;
 	String spawnSetMessage = "Your spawn was set to your bed... If it still exists.";
 	String spawnResetMessage = "Your spawn has been reset.";
 	String bedClickMessage1 = "Your spawn will be set to this bed in ";
 	String bedClickMessage2 = "... If it still exists then.";
+	String warningOnFirstDeathMessage1 = "You have spawned here now. If you die within the next ";
+	String warningOnFirstDeathMessage2 = " Minutes, this bed will reset.";
 	Stack<PlayerBed> deleteStack = new Stack<PlayerBed>();
+	boolean cooldownExtender = true;
 	
 	private long lastCall = 0;
 	private LinkedList<PlayerBed> playerList = new LinkedList<PlayerBed>();
@@ -32,12 +36,20 @@ public class BedHandlerListener implements Listener
 		Player player;
 		Location location;
 		int countdown;
+		int deathCooldown;
+		long lastDeath;
+		boolean firstDeath;
+		boolean bedSet;
 		
-		PlayerBed(Player player, Location bed, int timeLeft)
+		PlayerBed(Player player, Location bed, int timeLeft, int deathCooldown)
 		{
 			this.player = player;
 			this.location = bed;
 			this.countdown = timeLeft;
+			this.lastDeath = 0;
+			this.firstDeath = true;
+			this.bedSet = false;
+			this.deathCooldown = deathCooldown;
 		}
 	}
 	
@@ -46,38 +58,62 @@ public class BedHandlerListener implements Listener
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event)
 	{
-		Player playerRespawning = event.getPlayer();
+		/*Player playerRespawning = event.getPlayer();
 		if(event.isBedSpawn())
 		{
 			if(bedDestroyer)
 			{
-				Location location = playerRespawning.getBedSpawnLocation();
-				if(location != null)
-				{
-					location.getWorld().getBlockAt(location).breakNaturally();
-				}
 				playerRespawning.setBedSpawnLocation(null);
 				playerRespawning.sendMessage(ChatColor.GRAY + spawnResetMessage);
 			}
-		}
-	}
-	
-	/*@EventHandler
-	public void onPlayerBedEnter(PlayerBedEnterEvent event)
-	{
-		Player playerEntering = event.getPlayer();
-		playerEntering.setBedSpawnLocation(null);
+		}*/
+		Player deadPlayer = event.getPlayer();
 		for(PlayerBed item: playerList)
 		{
-			if(item.player.equals(playerEntering))
+			if(item.player == deadPlayer)
 			{
-				playerList.remove(item);
+				if(item.countdown > 0 && !item.bedSet)
+				{
+					deleteStack.push(item);
+					deadPlayer.sendMessage(ChatColor.GRAY + spawnResetMessage);
+				}
+				else if(item.firstDeath && item.bedSet)
+				{
+					if(event.isBedSpawn())
+					{
+						deadPlayer.sendMessage(ChatColor.GRAY + warningOnFirstDeathMessage1 + item.deathCooldown/60000 + warningOnFirstDeathMessage2);
+						item.lastDeath = System.currentTimeMillis();
+						item.firstDeath = false;
+					}
+				}
+				else if(!item.firstDeath && item.bedSet)
+				{
+					if((System.currentTimeMillis() - item.lastDeath) < item.deathCooldown)
+					{
+						if(event.isBedSpawn())
+						{
+							deadPlayer.setBedSpawnLocation(null);
+							deleteStack.push(item);
+							deadPlayer.sendMessage(ChatColor.GRAY + spawnResetMessage);
+						}
+					}
+					else
+					{
+						deadPlayer.sendMessage(ChatColor.GRAY + warningOnFirstDeathMessage1 + item.deathCooldown/60000 + warningOnFirstDeathMessage2);
+						item.lastDeath = System.currentTimeMillis();
+					}
+				}
 			}
 		}
-		playerList.add(new PlayerBed(playerEntering, event.getBed().getLocation(), setDownWaitingTime));
-		playerEntering.sendMessage(ChatColor.GRAY + "Your spawn will be set to this bed in " + setDownWaitingTime/60000 + " minutes... If it still exists then.");
-		event.setCancelled(true);
-	}*/
+		useDeleteStack();
+	}
+	
+	
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent event)
+	{
+		
+	}
 	
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event)
@@ -95,7 +131,7 @@ public class BedHandlerListener implements Listener
 						playerList.remove(item);
 					}
 				}
-				playerList.add(new PlayerBed(playerEntering, event.getClickedBlock().getLocation(), setDownWaitingTime));
+				playerList.add(new PlayerBed(playerEntering, event.getClickedBlock().getLocation(), setDownWaitingTime, deathCooldown));
 				playerEntering.sendMessage(ChatColor.GRAY + bedClickMessage1 + setDownWaitingTime/60000 + " minutes" + bedClickMessage2);
 				event.setUseInteractedBlock(Result.DENY);
 			}
@@ -113,14 +149,19 @@ public class BedHandlerListener implements Listener
 			if(item.countdown <= 0)
 			{
 				item.player.setBedSpawnLocation(item.location);
+				item.bedSet = true;
 				item.player.sendMessage(ChatColor.GRAY + spawnSetMessage);
-				deleteStack.push(item);
 			}
 		}
+	}
+	
+	private void useDeleteStack()
+	{
 		while(!deleteStack.isEmpty())
 		{
 			playerList.remove(deleteStack.pop());
 		}
+		deleteStack.clear();
 	}
 	
 }

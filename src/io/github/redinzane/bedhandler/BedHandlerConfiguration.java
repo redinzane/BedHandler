@@ -13,7 +13,8 @@ public class BedHandlerConfiguration
 	private static final String SECTION_MESSAGES = "messages";
 	
 	private static final String SETDOWN_KEY = "setdown";
-	private static final String BEDDESTROYER_KEY = "beddestroyer";
+	private static final String DEATHCOOLDOWN_KEY = "deathcooldown";
+	private static final String COOLDOWNEXTENDER_KEY = "cooldownextender";
 	private static final String SPAWNSET_KEY = "spawnset";
 	private static final String SPAWNRESET_KEY = "spawnreset";
 	private static final String BEDCLICK1_KEY = "bedclick1";
@@ -139,19 +140,41 @@ public class BedHandlerConfiguration
 	}
 	
 	/**
-	 * Retrieve the bed destroyer on/off boolean
+	 * Retrieve the Deathcooldown in milliseconds.
+	 * @return Deathcooldown in milliseconds.
+	 */
+	public int getDeathcooldown() 
+	{
+		Object value = getSectionOrDefault(SECTION_WAITINGTIMES).get(DEATHCOOLDOWN_KEY);
+		
+		if (value == null)
+			return DEFAULT_SETDOWN;
+		else
+			return ((Number) value).intValue();
+	}
+	/**
+	 * Set the Deathcooldown in milliseconds.
+	 * @param value - new Deathcooldown in milliseconds.
+	 */
+	public void setDeathcooldown(int value) 
+	{
+		getSectionOrDefault(SECTION_WAITINGTIMES).set(DEATHCOOLDOWN_KEY, value);
+	}
+	
+	/**
+	 * Retrieve the cooldownextender on/off boolean
 	 * @return value - on/off boolean
 	 */
-	public boolean getBeddestroyer() {
-		boolean value = getSectionOrDefault(SECTION_FEATURES).getBoolean(BEDDESTROYER_KEY);
+	public boolean getCooldownextender() {
+		boolean value = getSectionOrDefault(SECTION_FEATURES).getBoolean(COOLDOWNEXTENDER_KEY);
 		return value;
 	}
 	/**
-	 * Set the bed destroyer on/off boolean.
+	 * Set the cooldownextender on/off boolean.
 	 * @param value - new boolean
 	 */
-	public void setBeddestroyer(boolean value) {
-		getSectionOrDefault(SECTION_FEATURES).set(BEDDESTROYER_KEY, value);
+	public void setCooldownextender(boolean value) {
+		getSectionOrDefault(SECTION_FEATURES).set(COOLDOWNEXTENDER_KEY, value);
 	}
 	
 	

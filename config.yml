@@ -1,7 +1,8 @@
 waitingtimes:
   setdown: 1000
+  deathcooldown: 300000
 features:
-  beddestroyer: false
+  cooldownextender: false
 messages:
   spawnset: Your spawn was set to your bed... If it still exists.
   spawnreset: Your spawn has been reset.
