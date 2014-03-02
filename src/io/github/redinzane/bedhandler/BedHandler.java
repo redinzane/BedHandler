@@ -30,7 +30,7 @@ public class BedHandler extends JavaPlugin
 			getLogger().info("Creating default configuration.");
 		}
 		
-		listener = new SpawnListener(config.getDeathcooldown(),this);
+		listener = new SpawnListener(config.getDeathcooldown(),config.getFirstDeathcooldown(),this); //TODO second option
 		getServer().getPluginManager().registerEvents(listener, this);
 	}
 	

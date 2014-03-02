@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.Plugin;
 
@@ -20,11 +21,13 @@ public class SpawnListener implements Listener {
     private static final String bedRespawnMessage = "You have spawned here now. Your bed will again be ready in %d minutes.";
 
     private Map<Player,PlayerBed> playerMap = new HashMap();
-    private int deathCooldown = 300000;
+    private int deathCooldown;
+    private int firstDeathCooldown;
     private Plugin plugin;
 
-    public SpawnListener(int deathCooldown, Plugin plugin) {
+    public SpawnListener(int deathCooldown, int firstDeathCooldown, Plugin plugin) {
         this.deathCooldown = deathCooldown;
+        this.firstDeathCooldown = firstDeathCooldown;
         this.plugin = plugin;
     }
 
@@ -43,7 +46,7 @@ public class SpawnListener implements Listener {
         private PlayerBed(Player player, Location location) {
             this.player = player;
             this.location = location;
-            updateTime();
+            this.readyTime = SpawnListener.this.firstDeathCooldown;
         }
 
         private void updateTime(){
@@ -77,22 +80,24 @@ public class SpawnListener implements Listener {
 
 
     @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent event)
+    public void onPlayerRespawn(PlayerDeathEvent event)
     {
         long now = System.currentTimeMillis();
-        Player deadPlayer = event.getPlayer();
+        Player deadPlayer = event.getEntity();
         PlayerBed bed = playerMap.get(deadPlayer);
 
         if(bed==null){ // haven't found bed, server restart? new player?
             if(deadPlayer.getBedSpawnLocation()==null) return; // no bed found
-            playerMap.put(deadPlayer,new PlayerBed(deadPlayer,deadPlayer.getBedSpawnLocation()));
+            playerMap.put(deadPlayer,new PlayerBed(deadPlayer,deadPlayer.getBedSpawnLocation(),now)); // in doubt set spawn now
             deadPlayer.sendMessage(ChatColor.GRAY + String.format(bedRespawnMessage,deathCooldown /60000));
         }else if(!bed.isReady(now)){ //cooldown still running
             deadPlayer.setBedSpawnLocation(null);   //player should spawn randomly
             deadPlayer.sendMessage(ChatColor.GRAY + bedNotReadyMessage); // notify user that his spawn was reset
         }else{ // bed set, player will respawn there
-            deadPlayer.sendMessage(ChatColor.GRAY + String.format(bedRespawnMessage,deathCooldown /60000));
+            deadPlayer.setBedSpawnLocation(bed.location);   //player should spawn randomly
+            deadPlayer.sendMessage(ChatColor.GRAY + String.format(bedRespawnMessage, deathCooldown / 60000));
             bed.updateTime(); // reset timer
+            notifyPlayer(deadPlayer,this.deathCooldown+1000);
         }
     }
 
@@ -108,23 +113,24 @@ public class SpawnListener implements Listener {
                 if(playerMap.containsValue(new PlayerBed(playerEntering, l))){
                     playerEntering.sendMessage(ChatColor.GRAY + bedClickMessageRep);
                 }else {
-                    playerEntering.setBedSpawnLocation(l);
                     playerMap.put(playerEntering, new PlayerBed(playerEntering, l)); // add new Bed
                     playerEntering.sendMessage(ChatColor.GRAY + String.format(bedClickMessage,deathCooldown/60000));
-                    notifyPlayer(playerEntering);
-                    event.setUseInteractedBlock(Event.Result.DENY); // what is this??? This might be the xp not resetted problem
+                    notifyPlayer(playerEntering, this.firstDeathCooldown + 1000);
                 }
+                event.setUseInteractedBlock(Event.Result.DENY);
             }
         }
     }
 
-    private void notifyPlayer(final Player p){
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin,new Runnable() {
-                @Override
-                public void run() {
+    private void notifyPlayer(final Player p,int delay){
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (playerMap.get(p).isReady(System.currentTimeMillis())) {
                     p.sendMessage(ChatColor.GRAY + spawnSetMessage);
                 }
-            },this.deathCooldown+1000); // add a second to be sure it worked
+            }
+        }, delay / 50);
     }
 
 }
