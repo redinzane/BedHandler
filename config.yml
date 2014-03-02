@@ -1,10 +1,1 @@
-waitingtimes:
-  setdown: 1000
-  deathcooldown: 300000
-features:
-  cooldownextender: false
-messages:
-  spawnset: Your spawn was set to your bed... If it still exists.
-  spawnreset: Your spawn has been reset.
-  bedclick1: Your spawn will be set to this bed in 
-  bedclick2: ... If it still exists then.
+deathcooldown: 120000

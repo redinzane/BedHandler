@@ -3,23 +3,21 @@ package io.github.redinzane.bedhandler;
 import java.io.File;
 import java.io.IOException;
 
+import ch.k42.bedhandler.SpawnListener;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BedHandler extends JavaPlugin
 {
-	// Configuration
-	private BedHandlerConfiguration config;
-	// Minecraft packet handling
-	private BedHandlerListener listener;
-	//ID of the runnable task
-	private int taskID = -1;
-	//Metrics
-	private Metrics metrics;
-	
+
+	private BedHandlerConfiguration config;     // Configuration
+	private Listener listener;                  // The listener
+
 	@Override
 	public void onEnable()
 	{
 		//Creates a Config
+        this.saveDefaultConfig();
 		config = new BedHandlerConfiguration(getConfig());
 				
 		if (!hasConfig()) 
@@ -32,44 +30,14 @@ public class BedHandler extends JavaPlugin
 			getLogger().info("Creating default configuration.");
 		}
 		
-		listener = new BedHandlerListener();
+		listener = new SpawnListener(config.getDeathcooldown(),this);
 		getServer().getPluginManager().registerEvents(listener, this);
-		listener.cooldownExtender = config.getCooldownextender();
-		listener.setDownWaitingTime = config.getSetdown();
-		listener.spawnSetMessage = config.getSpawnSetMessage();
-		listener.spawnResetMessage = config.getSpawnResetMessage();
-		listener.bedClickMessage1 = config.getBedClick1Message();
-		
-		
-		try
-		{
-			taskID = getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){public void run(){listener.updatePlayerList();} }, 0, 1);
-			if(taskID == -1)
-			{
-				throw new Exception("BedHandler Update Task could not be scheduled");
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-		try 
-		{
-			metrics = new Metrics(this);
-			metrics.start();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		
 	}
 	
 	@Override
     public void onDisable()
     {
-		getServer().getScheduler().cancelTask(taskID);
+		getServer().getScheduler().cancelAllTasks();
     }
     
 	
