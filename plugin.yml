@@ -1,6 +1,6 @@
 name: BedHandler
 main: io.github.redinzane.bedhandler.BedHandler
-version: 0.3.0
+version: 0.3.1
 authors: [AthmosPrime, redinzane]
 description: BedHandler Plugin
 
