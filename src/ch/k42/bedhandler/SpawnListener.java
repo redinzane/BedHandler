@@ -84,7 +84,10 @@ public class SpawnListener implements Listener {
         }
     }
 
-
+    /**
+     * Player just died, what should happen?
+     * @param event
+     */
     @EventHandler
     public void onPlayerRespawn(PlayerDeathEvent event)
     {
@@ -108,6 +111,10 @@ public class SpawnListener implements Listener {
         }
     }
 
+    /**
+     * Player clicks a bed
+     * @param event
+     */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event)
     {
