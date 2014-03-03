@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class SpawnListener implements Listener {
     private static final String spawnSetMessage = "Your spawn was set to your bed... If it still exists.";
-    private static final String bedNotReadyMessage = "Your bed wasn't ready.";
+    private static final String bedNotReadyMessage = "There was no bed ready for you. Set a new one and try to survive a bit longer. Good luck!";
     private static final String bedClickMessage = "Your spawn will be set to this bed in %d minutes  ... If it still exists then.";
     private static final String bedClickMessageRep = "Your spawn is already set to this bed.";
     private static final String bedRespawnMessage = "You have spawned here now. Your bed will again be ready in %d minutes.";
