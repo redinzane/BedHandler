@@ -47,7 +47,7 @@ public class SpawnListener implements Listener {
         private PlayerBed(Player player, Location location) {
             this.player = player;
             this.location = location;
-            this.readyTime = SpawnListener.this.firstDeathCooldown;
+            this.readyTime = System.currentTimeMillis() + SpawnListener.this.firstDeathCooldown;
             hasBed = true;
         }
 
