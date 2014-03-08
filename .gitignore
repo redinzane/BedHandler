@@ -213,3 +213,24 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+############
+## Intellij
+############
+
+.idea/
+*.iml
+*.iws
+
+############
+## Mac
+############
+
+.DS_Store
+
+#############
+## Maven
+#############
+
+log/
+target/
