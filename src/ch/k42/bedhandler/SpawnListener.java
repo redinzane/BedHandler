@@ -124,18 +124,18 @@ public class SpawnListener implements Listener {
             	return; /* no bed found*/  
             }
             playerMap.put(deadPlayer, new PlayerBed(deadPlayer,deadPlayer.getBedSpawnLocation(), now)); // in doubt set spawn now
-            deadPlayer.sendMessage(ChatColor.GRAY + String.format(bedRespawnMessage, deathCooldown /60000));
+            deadPlayer.sendMessage(String.format(bedRespawnMessage, deathCooldown /60000));
         }
         else if(!bed.isReady(now)) //cooldown still running
         {
             deadPlayer.setBedSpawnLocation(null);   //player should spawn randomly
-            deadPlayer.sendMessage(ChatColor.GRAY + bedNotReadyMessage); // notify user that his spawn was reset
+            deadPlayer.sendMessage(bedNotReadyMessage); // notify user that his spawn was reset
             bed.setHasBed(false);   //remove bed
         }
         else // bed set, player will respawn there
         { 
             deadPlayer.setBedSpawnLocation(bed.location);   //player should spawn randomly
-            deadPlayer.sendMessage(ChatColor.GRAY + String.format(bedRespawnMessage, deathCooldown / 60000));
+            deadPlayer.sendMessage(String.format(bedRespawnMessage, deathCooldown / 60000));
             bed.resetTime(); // reset timer
             notifyPlayer(deadPlayer, this.deathCooldown + 1000);
         }
@@ -160,18 +160,18 @@ public class SpawnListener implements Listener {
                     if(!playerMap.get(playerEntering).hasBed)
                     {
                         playerMap.put(playerEntering,new PlayerBed(playerEntering, l)); // make sure to set it to 'on'
-                        playerEntering.sendMessage(ChatColor.GRAY + String.format(bedClickMessage,firstDeathCooldown/60000));
+                        playerEntering.sendMessage(  String.format(bedClickMessage,firstDeathCooldown/60000));
                         notifyPlayer(playerEntering, this.firstDeathCooldown + 1000);
                     }
                     else 
                     {
-                        playerEntering.sendMessage(ChatColor.GRAY + bedClickMessageRep);
+                        playerEntering.sendMessage(  bedClickMessageRep);
                     }
                 }
                 else 
                 {
                     playerMap.put(playerEntering, new PlayerBed(playerEntering, l)); // add new Bed
-                    playerEntering.sendMessage(ChatColor.GRAY + String.format(bedClickMessage,firstDeathCooldown/60000));
+                    playerEntering.sendMessage(String.format(bedClickMessage,firstDeathCooldown/60000));
                     notifyPlayer(playerEntering, this.firstDeathCooldown + 1000);
                 }
                 event.setUseInteractedBlock(Event.Result.DENY);
@@ -188,7 +188,7 @@ public class SpawnListener implements Listener {
             {
                 if (playerMap.get(p).isReady(System.currentTimeMillis())) 
                 {
-                    p.sendMessage(ChatColor.GRAY + spawnSetMessage);
+                    p.sendMessage(spawnSetMessage);
                 }
             }
         }, delay / 50);
