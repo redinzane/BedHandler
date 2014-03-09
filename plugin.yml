@@ -1,6 +1,6 @@
 name: BedHandler
 main: ch.k42.bedhandler.BedHandler
-version: 0.3.3
+version: 0.4
 authors: [AthmosPrime, redinzane]
 description: BedHandler Plugin
 
