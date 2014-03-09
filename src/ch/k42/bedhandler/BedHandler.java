@@ -26,7 +26,7 @@ public class BedHandler extends JavaPlugin
 {
 
 	private BedHandlerConfiguration config;
-	Listener listener;
+	private Listener listener;
 	private Metrics metrics;
 
 	@Override
@@ -34,7 +34,7 @@ public class BedHandler extends JavaPlugin
 	{
         this.saveDefaultConfig();
 		config = new BedHandlerConfiguration(getConfig());
-		listener = new SpawnListener(config.getDeathcooldown(), config.getFirstDeathcooldown(), this); //TODO second option
+		listener = new SpawnListener(this, config);
 		getServer().getPluginManager().registerEvents(listener, this);		
 		try 
 		{

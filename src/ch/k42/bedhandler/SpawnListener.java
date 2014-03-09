@@ -14,23 +14,29 @@ import java.util.*;
  * Created by Thomas on 02.03.14.
  */
 public class SpawnListener implements Listener {
-    private static final String spawnSetMessage = "Your spawn was set to your bed... If it still exists.";
-    private static final String bedNotReadyMessage = "There was no bed ready for you. Set a new one and try to survive a bit longer. Good luck!";
-    private static final String bedClickMessage = "Your spawn will be set to this bed in %d minutes  ... If it still exists then.";
-    private static final String bedClickMessageRep = "Your spawn is already set to this bed.";
-    private static final String bedRespawnMessage = "You have spawned here now. Your bed will again be ready in %d minutes.";
+    private String spawnSetMessage = "Your spawn was set to your bed... If it still exists.";
+    private String bedNotReadyMessage = "There was no bed ready for you. Set a new one and try to survive a bit longer. Good luck!";
+    private String bedClickMessage = "Your spawn will be set to this bed in %d minutes  ... If it still exists then.";
+    private String bedClickMessageRep = "Your spawn is already set to this bed.";
+    private String bedRespawnMessage = "You have spawned here now. Your bed will again be ready in %d minutes.";
 
     private Map<Player,PlayerBed> playerMap = new HashMap<Player, PlayerBed>();
     private int deathCooldown;
     private int firstDeathCooldown;
     private Plugin plugin;
 
-    public SpawnListener(int deathCooldown, int firstDeathCooldown, Plugin plugin) 
+    public SpawnListener(Plugin plugin, BedHandlerConfiguration configuration) 
     {
-        this.deathCooldown = deathCooldown;
-        this.firstDeathCooldown = firstDeathCooldown;
-        this.plugin = plugin;
+        this.deathCooldown = configuration.getDeathcooldown();
+        this.firstDeathCooldown = configuration.getFirstDeathcooldown();
+        this.spawnSetMessage = configuration.getSpawnSetMessage();
+        this.bedNotReadyMessage = configuration.getBedNotReadyMessage();
+        this.bedClickMessage = configuration.getBedClickMessage();
+        this.bedClickMessageRep = configuration.getBedClickRepMessage();
+        this.bedRespawnMessage = configuration.getBedRespawnMessage();   
+        this.plugin = plugin;     
     }
+    
 
     private class PlayerBed
     {
@@ -38,14 +44,22 @@ public class SpawnListener implements Listener {
         Location location;
         long readyTime;
         boolean hasBed;
-
+        
+        /**
+         * PlayerBed - Constructor for creating a new PlayerBed from an existing BedSpawn
+         * @param Player, Location, ReadyTime
+         */
         private PlayerBed(Player player, Location location, long readyTime) 
         {
             this.player = player;
             this.location = location;
             this.readyTime = readyTime;
         }
-
+        
+        /**
+         * PlayerBed - Constructor for entering a bed.
+         * @param Player, Location
+         */
         private PlayerBed(Player player, Location location) 
         {
             this.player = player;
@@ -54,7 +68,7 @@ public class SpawnListener implements Listener {
             hasBed = true;
         }
 
-        private void updateTime()
+        private void resetTime()
         {
             this.readyTime = System.currentTimeMillis() + SpawnListener.this.deathCooldown;
         }
@@ -109,11 +123,11 @@ public class SpawnListener implements Listener {
             { 
             	return; /* no bed found*/  
             }
-            playerMap.put(deadPlayer,new PlayerBed(deadPlayer,deadPlayer.getBedSpawnLocation(),now)); // in doubt set spawn now
-            deadPlayer.sendMessage(ChatColor.GRAY + String.format(bedRespawnMessage,deathCooldown /60000));
+            playerMap.put(deadPlayer, new PlayerBed(deadPlayer,deadPlayer.getBedSpawnLocation(), now)); // in doubt set spawn now
+            deadPlayer.sendMessage(ChatColor.GRAY + String.format(bedRespawnMessage, deathCooldown /60000));
         }
         else if(!bed.isReady(now)) //cooldown still running
-        	{
+        {
             deadPlayer.setBedSpawnLocation(null);   //player should spawn randomly
             deadPlayer.sendMessage(ChatColor.GRAY + bedNotReadyMessage); // notify user that his spawn was reset
             bed.setHasBed(false);   //remove bed
@@ -122,8 +136,8 @@ public class SpawnListener implements Listener {
         { 
             deadPlayer.setBedSpawnLocation(bed.location);   //player should spawn randomly
             deadPlayer.sendMessage(ChatColor.GRAY + String.format(bedRespawnMessage, deathCooldown / 60000));
-            bed.updateTime(); // reset timer
-            notifyPlayer(deadPlayer,this.deathCooldown+1000);
+            bed.resetTime(); // reset timer
+            notifyPlayer(deadPlayer, this.deathCooldown + 1000);
         }
     }
 
@@ -165,7 +179,7 @@ public class SpawnListener implements Listener {
         }
     }
 
-    private void notifyPlayer(final Player p,int delay)
+    private void notifyPlayer(final Player p, int delay)
     {
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() 
         {
