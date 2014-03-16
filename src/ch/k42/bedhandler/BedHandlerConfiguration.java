@@ -36,7 +36,14 @@ public class BedHandlerConfiguration
 	public String getSpawnSetMessage()
 	{
 		String value = getSectionOrDefault(SECTION_MESSAGES).getString(SPAWNSET_KEY);
-		return ChatColor.translateAlternateColorCodes(COLORCODE, value);
+		if(value == null)
+		{
+			return "";
+		}
+		else
+		{
+			return ChatColor.translateAlternateColorCodes(COLORCODE, value);
+		}
 	}
 	/**
 	 * Retrieve the Message.
@@ -45,7 +52,14 @@ public class BedHandlerConfiguration
 	public String getBedNotReadyMessage()
 	{
 		String value = getSectionOrDefault(SECTION_MESSAGES).getString(BEDNOTREADY_KEY);
-		return ChatColor.translateAlternateColorCodes(COLORCODE, value);
+		if(value == null)
+		{
+			return "";
+		}
+		else
+		{
+			return ChatColor.translateAlternateColorCodes(COLORCODE, value);
+		}
 	}
 	/**
 	 * Retrieve the Message.
@@ -54,7 +68,14 @@ public class BedHandlerConfiguration
 	public String getBedClickMessage()
 	{
 		String value = getSectionOrDefault(SECTION_MESSAGES).getString(BEDCLICK_KEY);
-		return ChatColor.translateAlternateColorCodes(COLORCODE, value);
+		if(value == null)
+		{
+			return "";
+		}
+		else
+		{
+			return ChatColor.translateAlternateColorCodes(COLORCODE, value);
+		}
 	}
 	/**
 	 * Retrieve the Message.
@@ -63,7 +84,14 @@ public class BedHandlerConfiguration
 	public String getBedClickRepMessage()
 	{
 		String value = getSectionOrDefault(SECTION_MESSAGES).getString(BEDCLICKREP_KEY);
-		return ChatColor.translateAlternateColorCodes(COLORCODE, value);
+		if(value == null)
+		{
+			return "";
+		}
+		else
+		{
+			return ChatColor.translateAlternateColorCodes(COLORCODE, value);
+		}
 	}
 	/**
 	 * Retrieve the Message.
@@ -72,7 +100,14 @@ public class BedHandlerConfiguration
 	public String getBedRespawnMessage()
 	{
 		String value = getSectionOrDefault(SECTION_MESSAGES).getString(BEDRESPAWN_KEY);
-		return ChatColor.translateAlternateColorCodes(COLORCODE, value);
+		if(value == null)
+		{
+			return "";
+		}
+		else
+		{
+			return ChatColor.translateAlternateColorCodes(COLORCODE, value);
+		}
 	}
 	
 	/**

@@ -160,12 +160,12 @@ public class SpawnListener implements Listener {
                     if(!playerMap.get(playerEntering).hasBed)
                     {
                         playerMap.put(playerEntering,new PlayerBed(playerEntering, l)); // make sure to set it to 'on'
-                        playerEntering.sendMessage(  String.format(bedClickMessage,firstDeathCooldown/60000));
+                        playerEntering.sendMessage(String.format(bedClickMessage,firstDeathCooldown/60000));
                         notifyPlayer(playerEntering, this.firstDeathCooldown + 1000);
                     }
                     else 
                     {
-                        playerEntering.sendMessage(  bedClickMessageRep);
+                        playerEntering.sendMessage(bedClickMessageRep);
                     }
                 }
                 else 
