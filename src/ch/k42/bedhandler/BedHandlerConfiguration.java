@@ -16,7 +16,7 @@ public class BedHandlerConfiguration
 	private static final String BEDNOTREADY_KEY = "bedNotReadyMessage";
 	private static final String BEDCLICK_KEY = "bedClickMessage";
 	private static final String BEDCLICKREP_KEY = "bedClickMessageRep";
-	private static final String BEDRESPAWN_KEY = "spawnSetMessage";
+	private static final String BEDRESPAWN_KEY = "bedRespawnMessage";
 	
 	private static final String DEATHCOOLDOWN_KEY = "deathcooldown";
     private static final int DEATHCOOLDOWN_DEFAULT = 120000;

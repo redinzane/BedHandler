@@ -1,9 +1,9 @@
 cooldowns:
     deathcooldown: 120000
     initialcooldown: 120000
-messages:    #Use \& for color codes
-    spawnSetMessage: \&7Your spawn was set to your bed... If it still exists.
-    bedNotReadyMessage: \&7There was no bed ready for you. Set a new one and try to survive a bit longer. Good luck!
-    bedClickMessage: \&7Your spawn will be set to this bed in %d minutes  ... If it still exists then.                          # Use %d to insert time
-    bedClickMessageRep: \&7Your spawn is already set to this bed.
-    bedRespawnMessage: \&7You have spawned here now. Your bed will again be ready in %d minutes.                                # Use %d to insert time
+messages:    #Use & for color codes
+    spawnSetMessage: "&7Your spawn was set to your bed... If it still exists."
+    bedNotReadyMessage: "&7There was no bed ready for you. Set a new one and try to survive a bit longer. Good luck!"
+    bedClickMessage: "&7Your spawn will be set to this bed in %d minutes  ... If it still exists then."                          # Use %d to insert time
+    bedClickMessageRep: "&7Your spawn is already set to this bed."
+    bedRespawnMessage: "&7You have spawned here now. Your bed will again be ready in %d minutes."                                # Use %d to insert time
