@@ -4,7 +4,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.Plugin;
 
@@ -111,10 +110,10 @@ public class SpawnListener implements Listener {
      * @param event
      */
     @EventHandler
-    public void onPlayerRespawn(PlayerDeathEvent event)
+    public void onPlayerRespawn(PlayerRespawnEvent event)
     {
         long now = System.currentTimeMillis();
-        Player deadPlayer = event.getEntity();
+        Player deadPlayer = event.getPlayer();
         PlayerBed bed = playerMap.get(deadPlayer);
 
         if(bed==null) // haven't found bed, server restart? new player?
@@ -134,10 +133,18 @@ public class SpawnListener implements Listener {
         }
         else // bed set, player will respawn there
         { 
-            deadPlayer.setBedSpawnLocation(bed.location);   //player should spawn randomly
-            deadPlayer.sendMessage(String.format(bedRespawnMessage, deathCooldown / 60000));
-            bed.resetTime(); // reset timer
-            notifyPlayer(deadPlayer, this.deathCooldown + 1000);
+            deadPlayer.setBedSpawnLocation(bed.location);
+            if(deadPlayer.getBedSpawnLocation() != null)
+            {
+            	deadPlayer.sendMessage(String.format(bedRespawnMessage, deathCooldown / 60000));
+            	bed.resetTime(); // reset timer
+            	notifyPlayer(deadPlayer, this.deathCooldown + 1000);
+            }
+            else
+            {
+            	deadPlayer.sendMessage(bedNotReadyMessage); // notify user that his spawn was reset
+                bed.setHasBed(false);   //remove bed
+            }
         }
     }
 
