@@ -4,7 +4,8 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.*;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
@@ -74,7 +75,7 @@ public class SpawnListener implements Listener {
 
         private boolean isReady(long now)
         {
-            return (readyTime<=now) && hasBed;
+            return (readyTime <= now) && hasBed;
         }
 
         public void setHasBed(boolean hasBed) 
@@ -83,15 +84,27 @@ public class SpawnListener implements Listener {
         }
 
         @Override
-        public boolean equals(Object o) 
+        public boolean equals(Object object) 
         {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == object)
+            {
+            	return true;
+            }
+            if (object == null || getClass() != object.getClass())
+            {
+            	return false;
+            }
 
-            PlayerBed playerBed = (PlayerBed) o;
+            PlayerBed playerBed = (PlayerBed) object;
 
-            if (!location.equals(playerBed.location)) return false;
-            if (!player.equals(playerBed.player)) return false;
+            if (!location.equals(playerBed.location))
+            {
+            	return false;
+            }
+            if (!player.equals(playerBed.player)) 
+            {
+            	return false;
+            }
 
             return true;
         }
@@ -110,17 +123,17 @@ public class SpawnListener implements Listener {
      * @param event
      */
     @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent event)
+    public void onPlayerRespawn(PlayerDeathEvent event)
     {
         long now = System.currentTimeMillis();
-        Player deadPlayer = event.getPlayer();
+        Player deadPlayer = event.getEntity();
         PlayerBed bed = playerMap.get(deadPlayer);
 
-        if(bed==null) // haven't found bed, server restart? new player?
+        if(bed == null) // haven't found bed, server restart? new player?
         {
-            if(deadPlayer.getBedSpawnLocation()==null)
+            if(deadPlayer.getBedSpawnLocation() == null)
             { 
-            	return; /* no bed found*/  
+            	return; /*no bed found*/  
             }
             playerMap.put(deadPlayer, new PlayerBed(deadPlayer,deadPlayer.getBedSpawnLocation(), now)); // in doubt set spawn now
             deadPlayer.sendMessage(String.format(bedRespawnMessage, deathCooldown /60000));
@@ -161,12 +174,12 @@ public class SpawnListener implements Listener {
             {
                 //player right-clicked on a bed
                 Player playerEntering = event.getPlayer();
-                Location l= event.getClickedBlock().getLocation();
-                if(playerMap.containsValue(new PlayerBed(playerEntering, l)))
+                Location location = event.getClickedBlock().getLocation();
+                if(playerMap.containsValue(new PlayerBed(playerEntering, location)))
                 {
                     if(!playerMap.get(playerEntering).hasBed)
                     {
-                        playerMap.put(playerEntering,new PlayerBed(playerEntering, l)); // make sure to set it to 'on'
+                        playerMap.put(playerEntering,new PlayerBed(playerEntering, location)); // make sure to set it to 'on'
                         playerEntering.sendMessage(String.format(bedClickMessage,firstDeathCooldown/60000));
                         notifyPlayer(playerEntering, this.firstDeathCooldown + 1000);
                     }
@@ -177,7 +190,7 @@ public class SpawnListener implements Listener {
                 }
                 else 
                 {
-                    playerMap.put(playerEntering, new PlayerBed(playerEntering, l)); // add new Bed
+                    playerMap.put(playerEntering, new PlayerBed(playerEntering, location)); // add new Bed
                     playerEntering.sendMessage(String.format(bedClickMessage,firstDeathCooldown/60000));
                     notifyPlayer(playerEntering, this.firstDeathCooldown + 1000);
                 }
@@ -186,16 +199,16 @@ public class SpawnListener implements Listener {
         }
     }
 
-    private void notifyPlayer(final Player p, int delay)
+    private void notifyPlayer(final Player player, int delay)
     {
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() 
         {
             @Override
             public void run() 
             {
-                if (playerMap.get(p).isReady(System.currentTimeMillis())) 
+                if (playerMap.get(player).isReady(System.currentTimeMillis())) 
                 {
-                    p.sendMessage(spawnSetMessage);
+                    player.sendMessage(spawnSetMessage);
                 }
             }
         }, delay / 50);
